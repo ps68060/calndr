@@ -9,6 +9,7 @@ interface
 const
   daySec  = 86400;
   hourSec = 3600;
+  minSec  = 60;
 
   mon1   : array [1..12] of String
          = ('January', 'February', 'March',     'April',   'May',      'June',
@@ -65,6 +66,11 @@ type
   function isLeapDay(y : Integer)
           : Boolean;
 
+  procedure timeBetween(epoch1, epoch2:LongInt;
+                        var dd,
+                            hh,
+                            mi,
+                            ss : Integer);
 
 implementation
 
@@ -322,7 +328,8 @@ implementation
                             mi,
                             ss : Integer);
   var
-    diffSec : LongInt;
+    diffSec,
+    remSec  : LongInt;
 
   begin
     if (epoch1 < epoch2)
@@ -331,13 +338,19 @@ implementation
     else
       diffSec := epoch1 - epoch2;
 
-    dd := diffSec div daySec;
+    writeln('diffsec = ', diffSec);
+    dd     := diffSec div daySec;
 
-    hh := (diffSec mod daySec) * daySec div hourSec;
+    remSec := diffsec mod daySec;
+    hh     := remSec  div hourSec;
 
-    writeln('timeBetween ', dd, ' days ', hh, ' hours');
+    remSec := remSec mod hourSec;
+    mi     := remSec div minSec;
+
+    ss     := remSec mod minSec;
+
+    writeln('timeBetween ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's');
   end;
-
 
 
 end.
