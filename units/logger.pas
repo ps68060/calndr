@@ -28,6 +28,10 @@ type
     procedure logInt(msgLevel : a_level;
                      message  : String;
                      int      : Integer );
+
+    procedure logLongInt(msgLevel : a_level;
+                         message  : String;
+                         int      : LongInt );
   end;
 
 implementation
@@ -78,6 +82,18 @@ begin
 
 end;
 
+
+
+procedure TLogger.logLongInt(msgLevel : a_level;
+                             message  : String;
+                             int      : LongInt );
+begin
+
+  if (ord(level) >= ord(msgLevel) )
+  then
+    writeln(message, int);
+
+end;
 
 
 end.
