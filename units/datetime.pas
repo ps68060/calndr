@@ -50,8 +50,10 @@ type
     function julianDate
             : Double;
 
-    function dayOfWeek
-            : Integer;
+    procedure dayOfWeek;
+
+    procedure epoch2Date;
+
   end;
 
   function date2Str(year, month, day : Word)
@@ -59,6 +61,7 @@ type
 
   function isLeapDay(y : Integer)
           : Boolean;
+
 
 implementation
 
@@ -125,7 +128,7 @@ implementation
     calcEpoch;
     writeln('epoch = ', epoch);
 
-    day := dayOfWeek;
+    dayOfWeek;
 
   end;
 
@@ -254,8 +257,7 @@ implementation
   end;
 
 
-  function TDateTime.dayOfWeek
-          : Integer;
+  procedure TDateTime.dayOfWeek;
   var
     t : array [0..11] of Integer;
     y : Integer;
@@ -287,7 +289,7 @@ implementation
     d :=  ( y + y div 4 - y div 100 + y div 400 + trunc(t[mm-1]) + trunc(dd) ) ;
     d := d - 7 * (int(d/7) );
 
-    dayOfWeek := trunc(d);
+    day := trunc(d);
   end;
 
 
@@ -303,6 +305,12 @@ implementation
     dtStr := dtStr + LPad( IntToStr(trunc(day)   ), 2, '0' );
 
     date2Str := dtStr;
+  end;
+
+
+  procedure TDateTime.epoch2Date;
+  begin
+    writeln;
   end;
 
 end.
