@@ -345,12 +345,12 @@ implementation
     then
     begin
       diffSec := epoch2 - epoch1;
-      future  := TRUE;
+      future  := FALSE;
     end
     else
     begin
       diffSec := epoch1 - epoch2;
-      future   := FALSE;
+      future   := TRUE;
     end;
 
     (*writeln('diffsec = ', diffSec);  *)
