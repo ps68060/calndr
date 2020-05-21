@@ -21,7 +21,7 @@ uses
 
 CONST
   version = '0.01ž';
-  dated   = '17-05-2020';
+  dated   = '17.05.2020';
 
 TYPE
   mailIndexT = RECORD
@@ -441,9 +441,6 @@ BEGIN
   writeln;
   writeln ('Extract iCal Version ', version, ' ', dated);
 
-  GetTime(hour, minute, second, sec100);
-  writeln('Current time : ', hour, ':', minute, ':', second, '.', sec100);
-
   writeln('---------------------------------------');
 
   new(logger);
@@ -491,6 +488,9 @@ BEGIN
 
   DisplayCalendar(myDate);
   Dispose(myDate, Done);
+
+  GetTime(hour, minute, second, sec100);
+  writeln('Current time : ', hour, ':', minute, ':', second, '.', sec100);
 
   logger^.log (INFO, 'Completed.' + CHR(7));
 
