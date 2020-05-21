@@ -4,7 +4,8 @@ unit datetime;
 interface
   uses
     Objects,
-    StrSubs;
+    StrSubs,
+    Logger;
 
 const
   daySec  = 86400;
@@ -70,7 +71,8 @@ type
                         var dd,
                             hh,
                             mi,
-                            ss : Integer);
+                            ss : Integer;
+                        var future : Boolean);
 
 implementation
 
@@ -129,13 +131,13 @@ implementation
     then
       writeln ('Integer conversion error of ss at ', code, ' in ', dtString);
 
-    (*writeln (yyyy, mm, dd, ' ', hh24, mi, ss);*)
+    (*writeln (yyyy, mm, dd, ' ', hh24, mi, ss); *)
 
     date2 := julianDate;
-    writeln('JDN      ', date2:12:2 );
+    (*writeln('JDN      ', date2:12:2 ); *)
 
     calcEpoch;
-    writeln('epoch = ', epoch);
+    (*writeln('epoch = ', epoch); *)
 
     dayOfWeek;
 
@@ -151,7 +153,7 @@ implementation
 
   begin
 
-    writeln (yyyy, '/', mm, '/', dd, ' ', hh24, ':', mi, ':', ss);
+    (*writeln (yyyy, '/', mm, '/', dd, ' ', hh24, ':', mi, ':', ss); *)
 
     epoch := trunc( julianDate - epochJD ) * daySec;
 
@@ -306,7 +308,7 @@ implementation
   var
     dtStr : String;
   begin
-    writeln('Current date is ', year, '/', month, '/', day );
+    (*writeln('Current date is ', year, '/', month, '/', day ); *)
 
     dtStr := IntToStr(trunc(year ) );
     dtStr := dtStr + LPad( IntToStr(trunc(month) ), 2, '0' );
@@ -326,19 +328,32 @@ implementation
                         var dd,
                             hh,
                             mi,
-                            ss : Integer);
+                            ss : Integer;
+                        var future : Boolean);
   var
     diffSec,
     remSec  : LongInt;
 
+    logger  : PLogger;
+
   begin
+    new(logger);
+    logger^.init;
+    logger^.level := INFO;
+
     if (epoch1 < epoch2)
     then
-      diffSec := epoch2 - epoch1
+    begin
+      diffSec := epoch2 - epoch1;
+      future  := TRUE;
+    end
     else
+    begin
       diffSec := epoch1 - epoch2;
+      future   := FALSE;
+    end;
 
-    writeln('diffsec = ', diffSec);
+    (*writeln('diffsec = ', diffSec);  *)
     dd     := diffSec div daySec;
 
     remSec := diffsec mod daySec;
@@ -349,7 +364,7 @@ implementation
 
     ss     := remSec mod minSec;
 
-    writeln('timeBetween ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's');
+    Dispose (logger, Done);
   end;
 
 
