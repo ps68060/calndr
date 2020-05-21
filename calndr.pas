@@ -38,6 +38,11 @@ VAR
 
   MailIndex   : array [1..2000] of MailIndexT;
 
+  year,
+  month,
+  day,
+  dayOfWeek : Word;
+
   hour,
   minute,
   second,
@@ -164,6 +169,11 @@ BEGIN
       then
         event^.dtEnd   := COPY (currentLn, 7, length(currentLn));
 
+      if ( pos('SUMMARY:', currentLn) = 1 )
+         and (NOT vAlarm)
+      then
+        event^.summary := COPY (currentLn, 9, length(currentLn));
+
       if ( pos('DESCRIPTION:', currentLn) = 1 )
          and (NOT vAlarm)
       then
@@ -217,8 +227,6 @@ begin
   reset  (calFile);
 
   writeln ('INFO: Reading from ', calName);
-
-  writeln ('INFO: Please wait, ...');
   writeln;
 
   while ( NOT eof(calFile) ) 
@@ -330,9 +338,8 @@ var
 begin
 
   GetDate (year, month, day, dayOfWeek) ;
-  writeln('Current date is ', year, '/', month, '/', day, ': ', day1[dayOfWeek] );
+  writeln('Current date is ', year, '/', month:2, '/', day:2, ': ', day1[dayOfWeek] );
 
-  day := 1;
   dtStr := date2Str(year, month, day);
 
   new(myDate);
@@ -341,14 +348,15 @@ begin
   myDate^.dayOfWeek;
 
   logger^.logInt(DEBUG, 'calendar ', myDate^.day);
+  logger^.logLongInt(DEBUG, 'epoch ', myDate^.epoch);
 
   for i := 0 to entries do
   begin
     logger^.log (DEBUG, 'Created on  : ' + eventList[i]^.created);
     logger^.log (DEBUG, 'Event start : ' + eventList[i]^.dtStart);
 
-    timeBetween(myDate^.epoch,
-                dateList[i]^.epoch,
+    timeBetween(dateList[i]^.epoch,
+                myDate^.epoch,
                 dd, hh, mi, ss,
                 future);
 
@@ -358,32 +366,26 @@ begin
     then
     begin
 
-    writeln('Time between : ', myDate^.yyyy,      myDate^.mm:2,      myDate^.dd:2,
+    (*
+    writeln('Current date : ', myDate^.yyyy,      myDate^.mm:2,      myDate^.dd:2,
             ' ', myDate^.hh24:2,      ':', myDate^.mi:2,      ':', myDate^.ss:2);
-
-    writeln('and          : ', dateList[i]^.yyyy, dateList[i]^.mm:2, dateList[i]^.dd:2,
-            ' ', dateList[i]^.hh24:2, ':', dateList[i]^.mi:2, ':', dateList[i]^.ss:2);
+    *)
+    writeln('Event on     : ',
+                 dateList[i]^.yyyy,
+                 dateList[i]^.mm:2,
+                 dateList[i]^.dd:2,   ' ',
+                 dateList[i]^.hh24:2, ':',
+                 dateList[i]^.mi:2,   ':',
+                 dateList[i]^.ss:2);
 
     if (future)
     then
-      write('Occurs in : ')
+      writeln('Occurs in    : ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's')
     else
-      write('Occurred : ');
+      writeln('Occurred     : ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's ago.');
 
-    writeln(dd, ' days ', hh, 'h ', mi, 'm ', ss, 's');
-
-    writeln;
-    writeln ('Event:', i,
-                '   ', dateList[i]^.yyyy,
-                  '/', dateList[i]^.mm,
-                  '/', dateList[i]^.dd,
-                  ' ', dateList[i]^.hh24:2,
-                  ':', dateList[i]^.mi:2,
-                  ':', dateList[i]^.ss:2,
-           ' epoch ', dateList[i]^.epoch );
-
+    writeln (eventList[i]^.summary);
     writeln (eventList[i]^.description);
-
     writeln;
     writeln ('Event end   : ', eventList[i]^.dtEnd);
     writeln;
@@ -391,9 +393,9 @@ begin
 
   end;  (* for *)
 
-  DisplayCalendar(myDate);
   Dispose (myDate, Done);
 
+  logger^.level := INFO;
 end;
 
 
@@ -469,7 +471,7 @@ BEGIN
     entries := DivideIcs (calName);
 
     Events2DateTime;
-    DisplayEvents(20, 50);
+    DisplayEvents(30, 50);
 
     for i := 0 to entries
     do
@@ -477,6 +479,18 @@ BEGIN
       Dispose (dateList[i], Done);
     end;
   end;
+
+  (* Display this month's calendar *)
+  GetDate (year, month, day, dayOfWeek) ;
+  dtStr := date2Str(year, month, 1);
+
+  new(myDate);
+  myDate^.init;
+  myDate^.dtStr2Obj(dtStr);
+  myDate^.dayOfWeek;
+
+  DisplayCalendar(myDate);
+  Dispose(myDate, Done);
 
   logger^.log (INFO, 'Completed.' + CHR(7));
 
