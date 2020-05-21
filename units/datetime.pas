@@ -7,6 +7,9 @@ interface
     StrSubs;
 
 const
+  daySec  = 86400;
+  hourSec = 3600;
+
   mon1   : array [1..12] of String
          = ('January', 'February', 'March',     'April',   'May',      'June',
             'July',    'August',   'September', 'October', 'November', 'December');
@@ -136,7 +139,6 @@ implementation
   procedure TDateTime.calcEpoch;
   const
     epochJD = 2440587.50;  (*  1970/01/01 00:00:00 *)
-    daySec  = 86400;
 
   var
     calc : LongInt;
@@ -147,7 +149,7 @@ implementation
 
     epoch := trunc( julianDate - epochJD ) * daySec;
 
-    epoch := epoch + trunc(hh24) * 3600;
+    epoch := epoch + trunc(hh24) * hourSec;
 
     epoch := epoch + mi   * 60;
 
@@ -168,7 +170,7 @@ implementation
     writeln (calc-1:2, ' : ', epoch);
 
     calc := hh24;
-    epoch := epoch + (calc    ) * 3600;
+    epoch := epoch + (calc    ) * hourSec;
     writeln (calc:2, ' : ', epoch);
 
     calc := mi;
@@ -312,5 +314,30 @@ implementation
   begin
     writeln;
   end;
+
+
+  procedure timeBetween(epoch1, epoch2:LongInt;
+                        var dd,
+                            hh,
+                            mi,
+                            ss : Integer);
+  var
+    diffSec : LongInt;
+
+  begin
+    if (epoch1 < epoch2)
+    then
+      diffSec := epoch2 - epoch1
+    else
+      diffSec := epoch1 - epoch2;
+
+    dd := diffSec div daySec;
+
+    hh := (diffSec mod daySec) * daySec div hourSec;
+
+    writeln('timeBetween ', dd, ' days ', hh, ' hours');
+  end;
+
+
 
 end.
