@@ -34,7 +34,7 @@ implementation
 
 constructor TLogger.init;
 begin
-  writeln ('LOGGER ' + 'initiated');
+  (*writeln ('LOGGER ' + 'initiated'); *)
 end;
 
 destructor TLogger.done;
