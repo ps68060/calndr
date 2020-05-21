@@ -45,9 +45,13 @@ VAR
 
   myDate    : PDateTime;
   dtStr     : String;
+
+  eventList : array [0..999] of PEvent;
+  dateList  : array [0..999] of PDateTime;
   entries   : Integer;
+  i         : Integer;
 
-
+  dd, hh, mi, ss : Integer;
 
 FUNCTION Get_File_Name (msg : String)
         : String;
@@ -197,7 +201,6 @@ var
   currentLn   : String;
 
   count       : longint;
-  EventList   : array [0..999] of PEvent;
 
   myStart     : PDateTime;
   i           : Integer;
@@ -243,23 +246,21 @@ begin
     logger^.log (DEBUG, 'Created on  : ' + eventList[i]^.created);
     logger^.log (DEBUG, 'Event start : ' + eventList[i]^.dtStart);
 
-    new (myStart);
-    myStart^.init;
-    myStart^.dtStr2Obj(eventList[i]^.dtStart);
+    new (dateList[i]);
+    dateList[i]^.init;
+    dateList[i]^.dtStr2Obj(eventList[i]^.dtStart);
 
     writeln;
     writeln ('Event:', i,
-                '   ', myStart^.yyyy,
-                  '/', myStart^.mm,
-                  '/', myStart^.dd,
-                  ' ', myStart^.hh24:2,
-                  ':', myStart^.mi:2,
-                  ':', myStart^.ss:2,
-           ' epoch ', myStart^.epoch );
+                '   ', dateList[i]^.yyyy,
+                  '/', dateList[i]^.mm,
+                  '/', dateList[i]^.dd,
+                  ' ', dateList[i]^.hh24:2,
+                  ':', dateList[i]^.mi:2,
+                  ':', dateList[i]^.ss:2,
+           ' epoch ', dateList[i]^.epoch );
 
     writeln (eventList[i]^.description);
-
-    dispose(myStart, done);
 
     writeln;
     writeln ('Event end   : ', eventList[i]^.dtEnd);
@@ -324,7 +325,7 @@ var
 
 begin
   GetDate (year, month, day, dayOfWeek) ;
-  writeln('Current date is ', year, '/', month, '/', day, 'day: ', dayOfWeek );
+  writeln('Current date is ', year, '/', month, '/', day, ': ', day1[dayOfWeek] );
 
   day := 1;
   firstOfMonth := date2Str(year, month, day);
@@ -430,7 +431,23 @@ BEGIN
 
   DisplayCalendar(myDate);
 
+
+  writeln('Time between : ', myDate^.yyyy, myDate^.mm, myDate^.dd,
+          ' ', myDate^.hh24, ':', myDate^.mi, ':', myDate^.ss);
+  writeln('and          : ', dateList[0]^.yyyy, dateList[0]^.mm, dateList[0]^.dd,
+          ' ', dateList[0]^.hh24, ':', dateList[0]^.mi, ':', dateList[0]^.ss);
+
+  timeBetween(myDate^.epoch,
+              dateList[0]^.epoch,
+              dd, hh, mi, ss);
+
   Dispose (myDate, Done);
+
+  for i := 0 to entries
+  do
+  begin
+    Dispose (dateList[i], Done);
+  end;
 
   Dispose (logger, Done);
 
