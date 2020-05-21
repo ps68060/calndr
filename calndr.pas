@@ -115,86 +115,6 @@ begin
 end;
 
 
-Function GetEvent (VAR calFile : Text;
-                   event : PEvent)
-        : Boolean;
-
-(*
-  Purpose : Find one iCS event.
- *)
-
-VAR
-  checkEnd,
-  convStr      : String;
-
-  currentLn    : String;
-  currentCount : Integer;
-
-  endEvent,
-  vAlarm       : Boolean;
-
-BEGIN
-  logger^.level := INFO;
-
-  checkEnd     := 'END:VEVENT';
-  endEvent     := FALSE;
-
-  while (NOT eof (calFile) 
-         AND NOT endEvent )
-  do
-  begin
-
-    readln ( calFile, currentLn );
-    logger^.log (DEBUG, currentLn);
-
-    (* Look for End Event *)
-    if ( pos(checkEnd, currentLn) = 1 )
-    then
-    begin
-
-      endEvent := TRUE;
-
-    end
-    else
-    begin
-      if ( pos('CREATED:', currentLn) = 1 )
-      then
-        event^.created := COPY (currentLn, 9, length(currentLn));
-
-      if ( pos('DTSTART:', currentLn) = 1 )
-      then
-        event^.dtStart := COPY (currentLn, 9, length(currentLn));
-
-      if ( pos('DTEND:', currentLn) = 1 )
-      then
-        event^.dtEnd   := COPY (currentLn, 7, length(currentLn));
-
-      if ( pos('SUMMARY:', currentLn) = 1 )
-         and (NOT vAlarm)
-      then
-        event^.summary := COPY (currentLn, 9, length(currentLn));
-
-      if ( pos('DESCRIPTION:', currentLn) = 1 )
-         and (NOT vAlarm)
-      then
-        event^.description := COPY (currentLn, 13, length(currentLn));
-
-      if (pos('BEGIN:VALARM', currentLn) = 1 )
-      then
-        vAlarm := TRUE;
-
-      if (pos('END:VALARM', currentLn) = 1 )
-      then
-        vAlarm := FALSE;
-
-    end;  (* if *)
-
-  end;  (* while *)
-
-  GetEvent := TRUE;
-end;
-
-
 Function DivideIcs (const calName : string)
         : Integer;
 
@@ -242,7 +162,7 @@ begin
       new (eventList[count]);
       eventList[count]^.init;
       
-      getEvent (calFile, eventList[count]);
+      eventList[count]^.getEvent(calFile);
       inc (count);
     end;
 
