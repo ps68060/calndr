@@ -16,6 +16,7 @@ type
   PEvent = ^TEvent;
   TEvent = object(TObject)
     created     : String;
+    summary     : String;
     description : String;
     dtStart     : String;
     dtEnd       : String;
