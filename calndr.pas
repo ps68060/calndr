@@ -43,11 +43,6 @@ VAR
   day,
   dayOfWeek : Word;
 
-  hour,
-  minute,
-  second,
-  sec100    : Word;
-
   myDate    : PDateTime;
   dtStr     : String;
 
@@ -253,14 +248,23 @@ var
   day,
   dayOfWeek : Word;
 
+  hour,
+  minute,
+  second,
+  sec100    : Word;
+
   i : Integer;
 
 begin
 
-  GetDate (year, month, day, dayOfWeek) ;
+  GetDate(year, month, day, dayOfWeek) ;
+  GetTime(hour, minute, second, sec100);
+
   writeln('Current date is ', year, '/', month:2, '/', day:2, ': ', day1[dayOfWeek] );
+  writeln('Current time : ', hour, ':', minute, ':', second, '.', sec100);
 
   dtStr := date2Str(year, month, day);
+  dtStr := dtStr + ' ' + time2Str(hour, minute, second);
 
   new(myDate);
   myDate^.init;
@@ -408,9 +412,6 @@ BEGIN
 
   DisplayCalendar(myDate);
   Dispose(myDate, Done);
-
-  GetTime(hour, minute, second, sec100);
-  writeln('Current time : ', hour, ':', minute, ':', second, '.', sec100);
 
   logger^.log (INFO, 'Completed.' + CHR(7));
 
