@@ -64,6 +64,9 @@ type
   function date2Str(year, month, day : Word)
           : String;
 
+  function time2Str(hour, minute, second : Word)
+          : String;
+
   function isLeapDay(y : Integer)
           : Boolean;
 
@@ -242,31 +245,6 @@ implementation
   end;
 
 
-  function isLeapDay(y : Integer)
-          : Boolean;
-  begin
-
-    if (y mod 4) = 0
-    then
-    begin
-
-      if (y mod 100) = 0
-      then
-      begin
-        if (y mod 400) = 0
-        then
-          isLeapDay := TRUE
-        else
-          isLeapDay := FALSE;
-      end
-      else
-        isLeapDay := TRUE;
-    end
-    else
-      isLeapDay := FALSE;
-  end;
-
-
   procedure TDateTime.dayOfWeek;
   var
     t : array [0..11] of Integer;
@@ -303,12 +281,18 @@ implementation
   end;
 
 
+  procedure TDateTime.epoch2Date;
+  begin
+    writeln;
+  end;
+
+
   function date2Str(year, month, day : Word)
           : String;
   var
     dtStr : String;
   begin
-    (*writeln('Current date is ', year, '/', month, '/', day ); *)
+    (*writeln('Date is ', year, '/', month, '/', day ); *)
 
     dtStr := IntToStr(trunc(year ) );
     dtStr := dtStr + LPad( IntToStr(trunc(month) ), 2, '0' );
@@ -318,11 +302,20 @@ implementation
   end;
 
 
-  procedure TDateTime.epoch2Date;
+  function time2Str(hour, minute, second : Word)
+          : String;
+  var
+    tmStr : String;
   begin
-    writeln;
-  end;
+    (*writeln('Time is ', hour, ':', minute, ':', second ); *)
 
+    tmStr :=         LPad( IntToStr(trunc(hour  ) ), 2, '0' );
+    tmStr := tmStr + LPad( IntToStr(trunc(minute) ), 2, '0' );
+    tmStr := tmStr + LPad( IntToStr(trunc(second) ), 2, '0' );
+    (*writeln(tmStr); *)
+
+    time2Str := tmStr;
+  end;
 
   procedure timeBetween(epoch1, epoch2:LongInt;
                         var dd,
@@ -367,5 +360,29 @@ implementation
     Dispose (logger, Done);
   end;
 
+
+  function isLeapDay(y : Integer)
+          : Boolean;
+  begin
+
+    if (y mod 4) = 0
+    then
+    begin
+
+      if (y mod 100) = 0
+      then
+      begin
+        if (y mod 400) = 0
+        then
+          isLeapDay := TRUE
+        else
+          isLeapDay := FALSE;
+      end
+      else
+        isLeapDay := TRUE;
+    end
+    else
+      isLeapDay := FALSE;
+  end;
 
 end.
