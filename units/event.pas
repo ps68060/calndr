@@ -75,6 +75,7 @@ implementation
 
     checkEnd     := 'END:VEVENT';
     endEvent     := FALSE;
+    alarm        := FALSE;
 
     while (NOT eof (calFile) 
            AND NOT endEvent )
