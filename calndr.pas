@@ -24,9 +24,9 @@ CONST
   dated   = '17.05.2020';
 
 TYPE
-  mailIndexT = RECORD
-                 msgNumber : Integer;
-                 dateTime  : String[100];
+  eventIndexT = RECORD
+                 eventNumber : Integer;
+                 dateTime    : String[100];
                END;
 
 VAR
@@ -36,7 +36,7 @@ VAR
   directory,
   calName     : String;
 
-  MailIndex   : array [1..2000] of MailIndexT;
+  eventIndex   : array [1..2000] of EventIndexT;
 
   year,
   month,
@@ -322,41 +322,6 @@ begin
   logger^.level := INFO;
 end;
 
-
-Procedure Sort_Msgs(count :Integer);
-
-var
-  i, j    : integer;
-  Swapper : mailIndexT;
-
-begin
-  writeln ('Sorting...');
-
-  for i := 1 to count do
-  begin
-    writeln (MailIndex[i].msgNumber, '...', MailIndex[i].dateTime);
-  end;
-
-  for i := 1 TO count - 1 DO
-  begin
-    FOR j := i + 1 TO count DO
-    BEGIN
-      IF (MailIndex[i].dateTime > MailIndex[j].dateTime )
-      THEN
-      BEGIN
-        Swapper      := MailIndex[i];
-        MailIndex[i] := MailIndex[j];
-        MailIndex[j] := Swapper;
-      END;  (* if *)
-    END;  (* for *)
-  end;  (* for *)
-
-  FOR i := 1 TO count DO
-  BEGIN
-    writeln (MailIndex[i].msgNumber, '-', MailIndex[i].dateTime);
-  END;
-
-end;
 
 (******************************  MAIN PROGRAM  ********************************)
 
