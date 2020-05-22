@@ -304,7 +304,7 @@ begin
     writeln (cal^.eventList[i]^.description);
     writeln;
     writeln ('Event end   : ', cal^.eventList[i]^.dtEnd);
-    writeln('--------------------------------', chr(7) );
+    writeln('--------------------------------' );
     writeln;
     end;
 
