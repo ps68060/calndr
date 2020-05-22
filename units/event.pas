@@ -10,6 +10,7 @@ unit Event;
 interface
   uses
     Objects,
+    DateTime,
     Logger;
 
 
@@ -22,6 +23,9 @@ type
     dtStart     : String;
     dtEnd       : String;
     alarm       : Boolean;
+
+    startDate   : PDateTime;
+    endDate     : PDateTime;
 
     constructor init;
     destructor  done; virtual;
@@ -41,11 +45,18 @@ implementation
     description := '';
     dtstart     := '';
     dtend       := '';
+
+    new (startDate);
+    startDate^.init;
+
+    new (endDate);
+    endDate^.init;
   end;
 
   destructor TEvent.done;
   begin
-
+    Dispose(startDate, Done);
+    Dispose(endDate, Done);
   end;
 
 
@@ -128,6 +139,20 @@ implementation
       end;  (* if *)
 
     end;  (* while *)
+
+
+    if (length(dtStart) > 0)
+    then
+    begin
+      startDate^.dtStr2Obj(dtStart);
+    end;
+
+
+    if (length(dtEnd) > 0)
+    then
+    begin
+      endDate^.dtStr2Obj(dtEnd);
+    end;
 
     Dispose(logger, Done);
 

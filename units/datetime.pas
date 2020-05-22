@@ -339,6 +339,9 @@ implementation
     logger^.init;
     logger^.level := INFO;
 
+    logger^.logLongInt(DEBUG, 'epoch1 ', epoch1);
+    logger^.logLongInt(DEBUG, 'epoch2 ', epoch2);
+
     if (epoch1 < epoch2)
     then
     begin

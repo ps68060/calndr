@@ -47,8 +47,6 @@ VAR
   myDate    : PDateTime;
   dtStr     : String;
 
-  eventList : array [0..999] of PEvent;
-  dateList  : array [0..999] of PDateTime;
   entries   : Integer;
   i         : Integer;
 
@@ -196,26 +194,6 @@ begin
 end;
 
 
-Procedure Events2DateTime;
-(*
-  Purpose : Create a DateTime object for each Event from the file.
- *)
-
-var
-  i : Integer;
-
-begin
-
-  for i := 0 to cal^.entries do
-  begin
-    new (dateList[i]);
-    dateList[i]^.init;
-    dateList[i]^.dtStr2Obj(cal^.eventList[i]^.dtStart);
-  end;
-
-end;
-
-
 Procedure DisplayEvents (rangePast, rangeFuture : Integer);
 (*
   Purpose : List all the DateTime/Events that occur either side of
@@ -260,7 +238,8 @@ begin
     logger^.log (DEBUG, 'Created on  : ' + cal^.eventList[i]^.created);
     logger^.log (DEBUG, 'Event start : ' + cal^.eventList[i]^.dtStart);
 
-    timeBetween(dateList[i]^.epoch,
+    logger^.logLongInt (DEBUG, 'epoch = ', cal^.eventList[i]^.startDate^.epoch);
+    timeBetween(cal^.eventList[i]^.startDate^.epoch,
                 myDate^.epoch,
                 dd, hh, mi, ss,
                 future);
@@ -276,12 +255,12 @@ begin
             ' ', myDate^.hh24:2,      ':', myDate^.mi:2,      ':', myDate^.ss:2);
     *)
     writeln('Event on     : ',
-                 dateList[i]^.yyyy,
-                 dateList[i]^.mm:2,
-                 dateList[i]^.dd:2,   ' ',
-                 dateList[i]^.hh24:2, ':',
-                 dateList[i]^.mi:2,   ':',
-                 dateList[i]^.ss:2);
+                 cal^.eventList[i]^.startDate^.yyyy,
+                 cal^.eventList[i]^.startDate^.mm:2,
+                 cal^.eventList[i]^.startDate^.dd:2,   ' ',
+                 cal^.eventList[i]^.startDate^.hh24:2, ':',
+                 cal^.eventList[i]^.startDate^.mi:2,   ':',
+                 cal^.eventList[i]^.startDate^.ss:2);
 
     if (future)
     then
@@ -353,14 +332,8 @@ BEGIN
     entries := 0;
     loadICS (directory);
 
-    Events2DateTime;
     DisplayEvents(30, 50);
 
-    for i := 0 to entries
-    do
-    begin
-      Dispose (dateList[i], Done);
-    end;
   end;
 
   (* Display this month's calendar *)
