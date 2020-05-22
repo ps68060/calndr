@@ -30,6 +30,7 @@ TYPE
                END;
 
 VAR
+
   logger      : PLogger;
 
   inFileName,
@@ -77,17 +78,14 @@ BEGIN
 END;
 
 
-PROCEDURE Get_File_Names (VAR InFileName,
-                              OutFileName : String);
+PROCEDURE Get_File_Names (VAR folderName : String);
 
-BEGIN
-  
-  inFileName := Get_File_Name('Enter path\name of input file');
-  readln;
+begin
 
-  outFileName := Get_File_Name('Enter Folder for output file(s)');
+  folderName := Get_File_Name('Enter Folder for ICS file(s)');
   writeln;
-END;
+
+end;
 
 
 FUNCTION MakeIndex (entry : integer)
@@ -110,8 +108,8 @@ begin
 end;
 
 
-Function DivideIcs (const calName : string)
-        : Integer;
+Procedure DivideIcs (const calName : String;
+                     var   count   : Integer);
 
 (*
   Purpose : Read an ICS file and get all the Events
@@ -126,14 +124,10 @@ var
   checkStart  : String;
   currentLn   : String;
 
-  count       : longint;
-
   myStart     : PDateTime;
   i           : Integer;
 
 begin
-
-  count    := 0;
 
   checkStart := 'BEGIN:VEVENT';
 
@@ -142,7 +136,6 @@ begin
   reset  (calFile);
 
   writeln ('INFO: Reading from ', calName);
-  writeln;
 
   while ( NOT eof(calFile) ) 
   do
@@ -158,6 +151,7 @@ begin
       eventList[count]^.init;
       
       eventList[count]^.getEvent(calFile);
+
       inc (count);
     end;
 
@@ -165,11 +159,34 @@ begin
 
   dec (count);
 
-  writeln;
   writeln ('INFO: ', count +1, ' Entries read.');
+  writeln;
 
-  DivideIcs := count;
+end;
 
+
+Procedure loadICS (directory : String);
+var
+  attr    : Word;
+  fileRec : SearchRec;
+  calName : String;
+
+begin
+
+  findFirst(directory + '/*.ics', attr, fileRec);
+
+  while DosError = 0
+  do
+  begin
+    calName := directory + '/' +  fileRec.name;
+
+    DivideIcs (calName, entries);
+    inc (entries);
+
+    FindNext( fileRec );
+  end;
+  
+  dec (entries);
 end;
 
 
@@ -262,6 +279,7 @@ begin
 
   writeln('Current date is ', year, '/', month:2, '/', day:2, ': ', day1[dayOfWeek] );
   writeln('Current time : ', hour, ':', minute, ':', second, '.', sec100);
+  writeln;
 
   dtStr := date2Str(year, month, day);
   dtStr := dtStr + ' ' + time2Str(hour, minute, second);
@@ -304,7 +322,12 @@ begin
 
     if (future)
     then
-      writeln('Occurs in    : ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's')
+    begin
+      writeln('Occurs in    : ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's');
+      if (dd = 0)
+      then
+        writeln('================================', chr(7) );
+    end
     else
       writeln('Occurred     : ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's ago.');
 
@@ -338,23 +361,23 @@ BEGIN
 
   (* have the parameters been put on the command line *)
 
-  if paramCount = 2
+  if paramCount = 1
   then
   begin
-    inFileName  := paramStr(1);
-    directory   := paramStr(2);
+    directory   := paramStr(1);
   end
   else
   begin
-    Get_File_Names(inFileName, directory);
+    Get_File_Names(directory);
   end;  (* if-then-else *)
 
-  calName := directory + InFileName;
+  calName := directory;
 
-  if (Exist(calName) )
+  if (Exist(directory) )
   then
   begin
-    entries := DivideIcs (calName);
+    entries := 0;
+    loadICS (directory);
 
     Events2DateTime;
     DisplayEvents(30, 50);
@@ -378,7 +401,7 @@ BEGIN
   DisplayCalendar(myDate);
   Dispose(myDate, Done);
 
-  logger^.log (INFO, 'Completed.' + CHR(7));
+  logger^.log (INFO, 'Completed.');
 
   Dispose (logger, Done);
 
