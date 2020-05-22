@@ -8,11 +8,11 @@ The initial goal is to show a list of events from the .ics file.
 
 Usage:
 
-./calndr.ttp  <filename.ics>  /<directory>/
+./calndr.ttp  <directory>
 
 e.g.
 
- ./calndr.ttp  meet.ics  /f/
+ ./calndr.ttp  /f/
 
 will show details of the events in the ics file and then the
 calendar for the current month.
