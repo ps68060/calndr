@@ -166,6 +166,10 @@ end;
 
 
 Procedure loadICS (directory : String);
+(*
+  Purpose : Load all the *.ics files from the <directory>.
+ *)
+
 var
   attr    : Word;
   fileRec : SearchRec;
@@ -191,6 +195,10 @@ end;
 
 
 procedure DisplayCalendar(myDate : PDateTime);
+(*
+  Purpose : Write out a formatted calendar for the month <myDate>.
+ *)
+
 var
   i,
   j,
@@ -243,6 +251,10 @@ end;
 
 
 Procedure Events2DateTime;
+(*
+  Purpose : Create a DateTime object for each Event from the file.
+ *)
+
 var
   i : Integer;
 
@@ -259,6 +271,11 @@ end;
 
 
 Procedure DisplayEvents (rangePast, rangeFuture : Integer);
+(*
+  Purpose : List all the DateTime/Events that occur either side of
+            the current date, after <rangePast> and before <rangeFuture>.
+ *)
+
 var
   year,
   month,
