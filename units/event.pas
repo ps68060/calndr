@@ -4,7 +4,7 @@ unit Event;
 
 (* AUTHOR  : P Slegg
    DATE    : 16th May 2020 Version 0
-   PURPOSE : TEvent object for iCal Events
+   PURPOSE : TEvent object for iCal Events.
 *)
 
 interface

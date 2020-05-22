@@ -1,6 +1,11 @@
 {$B+,D-,G-,I-,L-,P-,Q-,R+,S-,T-,V-,X+,Z-}
 unit datetime;
 
+(* AUTHOR  : P SLEGG
+   DATE    : 17th May 2020 Version 1
+   PURPOSE : TDateTime object for the parsed an converted ICS Event.
+*)
+
 interface
   uses
     Objects,

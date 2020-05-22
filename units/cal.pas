@@ -3,8 +3,8 @@
 unit Cal;
 
 (* AUTHOR  : P SLEGG
-   DATE    : 13th April 2020 Version 1
-   PURPOSE : TText object for long strings of 1024 char
+   DATE    : 17th May 2020 Version 1
+   PURPOSE : TCal object for ICS file.
 *)
 
 interface
