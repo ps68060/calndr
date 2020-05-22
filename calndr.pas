@@ -37,7 +37,7 @@ VAR
   directory,
   calName     : String;
 
-  eventIndex   : array [1..2000] of EventIndexT;
+  cal         : PCal;
 
   year,
   month,
@@ -54,6 +54,9 @@ VAR
 
   dd, hh, mi, ss : Integer;
   future         : Boolean;
+
+  eventIndex   : array [1..2000] of EventIndexT;
+
 
 FUNCTION Get_File_Name (msg : String)
         : String;
@@ -108,63 +111,6 @@ begin
 end;
 
 
-Procedure DivideIcs (const calName : String;
-                     var   count   : Integer);
-
-(*
-  Purpose : Read an ICS file and get all the Events
-            into EventsList.
-            Return the number of events.
- *)
-
-var
-
-  calFile  : Text;
-
-  checkStart  : String;
-  currentLn   : String;
-
-  myStart     : PDateTime;
-  i           : Integer;
-
-begin
-
-  checkStart := 'BEGIN:VEVENT';
-
-  (* Open the calendar file for reading *)
-  assign (calFile, calName);
-  reset  (calFile);
-
-  writeln ('INFO: Reading from ', calName);
-
-  while ( NOT eof(calFile) ) 
-  do
-  begin
-
-    readln ( calFile, currentLn );
-    logger^.log (DEBUG, currentLn);
-
-    if ( pos (checkStart, currentLn) = 1 )
-    then
-    begin
-      new (eventList[count]);
-      eventList[count]^.init;
-      
-      eventList[count]^.getEvent(calFile);
-
-      inc (count);
-    end;
-
-  end;
-
-  dec (count);
-
-  writeln ('INFO: ', count +1, ' Entries read.');
-  writeln;
-
-end;
-
-
 Procedure loadICS (directory : String);
 (*
   Purpose : Load all the *.ics files from the <directory>.
@@ -184,13 +130,13 @@ begin
   begin
     calName := directory + '/' +  fileRec.name;
 
-    DivideIcs (calName, entries);
-    inc (entries);
+    cal^.DivideIcs (calName);
+    inc (cal^.entries);
 
     FindNext( fileRec );
   end;
   
-  dec (entries);
+  dec (cal^.entries);
 end;
 
 
@@ -260,11 +206,11 @@ var
 
 begin
 
-  for i := 0 to entries do
+  for i := 0 to cal^.entries do
   begin
     new (dateList[i]);
     dateList[i]^.init;
-    dateList[i]^.dtStr2Obj(eventList[i]^.dtStart);
+    dateList[i]^.dtStr2Obj(cal^.eventList[i]^.dtStart);
   end;
 
 end;
@@ -309,10 +255,10 @@ begin
   logger^.logInt(DEBUG, 'calendar ', myDate^.day);
   logger^.logLongInt(DEBUG, 'epoch ', myDate^.epoch);
 
-  for i := 0 to entries do
+  for i := 0 to cal^.entries do
   begin
-    logger^.log (DEBUG, 'Created on  : ' + eventList[i]^.created);
-    logger^.log (DEBUG, 'Event start : ' + eventList[i]^.dtStart);
+    logger^.log (DEBUG, 'Created on  : ' + cal^.eventList[i]^.created);
+    logger^.log (DEBUG, 'Event start : ' + cal^.eventList[i]^.dtStart);
 
     timeBetween(dateList[i]^.epoch,
                 myDate^.epoch,
@@ -341,17 +287,24 @@ begin
     then
     begin
       writeln('Occurs in    : ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's');
+
       if (dd = 0)
       then
+      begin
         writeln('================================', chr(7) );
+        writeln('Press [return]');
+        readln;
+      end;
     end
+
     else
       writeln('Occurred     : ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's ago.');
 
-    writeln (eventList[i]^.summary);
-    writeln (eventList[i]^.description);
+    writeln (cal^.eventList[i]^.summary);
+    writeln (cal^.eventList[i]^.description);
     writeln;
-    writeln ('Event end   : ', eventList[i]^.dtEnd);
+    writeln ('Event end   : ', cal^.eventList[i]^.dtEnd);
+    writeln('--------------------------------', chr(7) );
     writeln;
     end;
 
@@ -393,6 +346,10 @@ BEGIN
   if (Exist(directory) )
   then
   begin
+
+    new(cal);
+    cal^.init;
+
     entries := 0;
     loadICS (directory);
 
@@ -420,6 +377,7 @@ BEGIN
 
   logger^.log (INFO, 'Completed.');
 
+  Dispose (cal, Done);
   Dispose (logger, Done);
 
 END.
