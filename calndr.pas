@@ -47,7 +47,6 @@ VAR
   myDate    : PDateTime;
   dtStr     : String;
 
-  entries   : Integer;
   i         : Integer;
 
   dd, hh, mi, ss : Integer;
@@ -290,8 +289,6 @@ BEGIN
 
     new(cal);
     cal^.init;
-
-    entries := 0;
     cal^.loadICS (directory);
 
     DisplayEvents(30, 50);
