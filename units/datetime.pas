@@ -64,6 +64,8 @@ type
 
     procedure epoch2Date;
 
+    procedure write;
+
   end;
 
   function date2Str(year, month, day : Word)
@@ -289,6 +291,17 @@ implementation
   procedure TDateTime.epoch2Date;
   begin
     writeln;
+  end;
+
+
+  procedure TDateTime.write;
+  begin
+    writeln( yyyy,                        '.',
+             lpad(IntToStr(mm),  2, '0'), '.',
+             lpad(IntToStr(dd),  2, '0'), ' ',
+             lpad(IntToStr(hh24),2, '0'), ':',
+             lpad(IntToStr(mi),  2, '0'), ':',
+             lpad(IntToStr(ss),  2, '0') );
   end;
 
 

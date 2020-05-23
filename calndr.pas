@@ -254,13 +254,8 @@ begin
     writeln('Current date : ', myDate^.yyyy,      myDate^.mm:2,      myDate^.dd:2,
             ' ', myDate^.hh24:2,      ':', myDate^.mi:2,      ':', myDate^.ss:2);
     *)
-    writeln('Event on     : ',
-                 cal^.eventList[i]^.startDate^.yyyy,
-                 cal^.eventList[i]^.startDate^.mm:2,
-                 cal^.eventList[i]^.startDate^.dd:2,   ' ',
-                 cal^.eventList[i]^.startDate^.hh24:2, ':',
-                 cal^.eventList[i]^.startDate^.mi:2,   ':',
-                 cal^.eventList[i]^.startDate^.ss:2);
+
+    cal^.eventList[i]^.writeEvent;
 
     if (future)
     then
@@ -279,10 +274,6 @@ begin
     else
       writeln('Occurred     : ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's ago.');
 
-    writeln (cal^.eventList[i]^.summary);
-    writeln (cal^.eventList[i]^.description);
-    writeln;
-    writeln ('Event end   : ', cal^.eventList[i]^.dtEnd);
     writeln('--------------------------------' );
     writeln;
     end;

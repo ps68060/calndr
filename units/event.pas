@@ -33,6 +33,8 @@ type
     Function GetEvent (VAR calFile : Text)
             : Boolean;
 
+    Procedure WriteEvent;
+
   end;
 
 
@@ -159,5 +161,25 @@ implementation
     GetEvent := TRUE;
 
   end;
+
+
+  Procedure TEvent.WriteEvent;
+
+  begin
+    write('Event on     : ');
+    startDate^.write;
+
+    if (length(summary) > 0 )
+    then
+      writeln (summary);
+
+    if (length(description) > 0 )
+    then
+      writeln (description);
+
+    write('Event ends  : ');
+    endDate^.write;
+  end;
+
 
 end.
