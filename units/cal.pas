@@ -9,6 +9,7 @@ unit Cal;
 
 interface
   uses
+    Dos,
     Objects,
     Event,
     Logger;
@@ -26,6 +27,7 @@ type
     constructor init;
     destructor  done; virtual;
 
+    Procedure LoadICS (directory : String);
     Procedure DivideIcs (const calName : String);
 
   end;
@@ -50,6 +52,35 @@ implementation
     begin
       Dispose(eventList[i], Done);
     end;
+  end;
+
+
+  Procedure TCal.LoadICS (directory : String);
+  (*
+    Purpose : Load all the *.ics files from the <directory>.
+  *)
+
+  var
+    attr    : Word;
+    fileRec : SearchRec;
+    calName : String;
+
+  begin
+
+    findFirst(directory + '/*.ics', attr, fileRec);
+
+    while DosError = 0
+    do
+    begin
+      calName := directory + '/' +  fileRec.name;
+
+      DivideIcs (calName);
+      inc (entries);
+
+      FindNext( fileRec );
+    end;
+  
+    dec (entries);
   end;
 
 

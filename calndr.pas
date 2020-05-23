@@ -109,35 +109,6 @@ begin
 end;
 
 
-Procedure loadICS (directory : String);
-(*
-  Purpose : Load all the *.ics files from the <directory>.
- *)
-
-var
-  attr    : Word;
-  fileRec : SearchRec;
-  calName : String;
-
-begin
-
-  findFirst(directory + '/*.ics', attr, fileRec);
-
-  while DosError = 0
-  do
-  begin
-    calName := directory + '/' +  fileRec.name;
-
-    cal^.DivideIcs (calName);
-    inc (cal^.entries);
-
-    FindNext( fileRec );
-  end;
-  
-  dec (cal^.entries);
-end;
-
-
 procedure DisplayCalendar(myDate : PDateTime);
 (*
   Purpose : Write out a formatted calendar for the month <myDate>.
@@ -321,7 +292,7 @@ BEGIN
     cal^.init;
 
     entries := 0;
-    loadICS (directory);
+    cal^.loadICS (directory);
 
     DisplayEvents(30, 50);
 
