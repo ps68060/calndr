@@ -325,6 +325,7 @@ BEGIN
 
     DisplayEvents(30, 50);
 
+    Dispose (cal, Done);
   end;
 
   (* Display this month's calendar *)
@@ -341,7 +342,6 @@ BEGIN
 
   logger^.log (INFO, 'Completed.');
 
-  Dispose (cal, Done);
   Dispose (logger, Done);
 
 END.
