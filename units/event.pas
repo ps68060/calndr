@@ -22,15 +22,21 @@ type
     description : String;
     dtStart     : String;
     dtEnd       : String;
-    alarm       : Boolean;
 
     startDate   : PDateTime;
     endDate     : PDateTime;
+
+    alarmAction      : String;
+    alarmTrigger     : String;
+    alarmDescription : String;
 
     constructor init;
     destructor  done; virtual;
 
     Function GetEvent (VAR calFile : Text)
+            : Boolean;
+
+    Function GetAlarm (var calFile : Text)
             : Boolean;
 
     Procedure WriteEvent;
@@ -76,8 +82,8 @@ implementation
     convStr      : String;
 
     currentLn    : String;
-    currentCount : Integer;
 
+    alarm        : Boolean;
     endEvent     : Boolean;
 
   begin
@@ -130,9 +136,12 @@ implementation
         then
           description := COPY (currentLn, 13, length(currentLn));
 
-        if (pos('BEGIN:VALARM', currentLn) = 1 )
+        if (NOT alarm)
+            and (pos('BEGIN:VALARM', currentLn) = 1 )
         then
-          alarm := TRUE;
+        begin
+          alarm := GetAlarm(calFile);
+        end;
 
         if (pos('END:VALARM', currentLn) = 1 )
         then
@@ -163,19 +172,73 @@ implementation
   end;
 
 
+  Function TEvent.GetAlarm (var calFile : Text)
+          : Boolean;
+  var
+    currentLn    : String;
+
+    checkEnd     : String;
+    endAlarm     : Boolean;
+
+  begin
+    checkEnd := 'END:VALARM';
+    endAlarm := FALSE;
+
+    while (NOT eof (calFile) 
+           AND NOT endAlarm )
+    do
+    begin
+
+      readln ( calFile, currentLn );
+
+      (* Look for End Alarm *)
+      if ( pos(checkEnd, currentLn) = 1 )
+      then
+      begin
+
+        endAlarm := TRUE;
+
+      end
+      else
+      begin
+
+        if (pos('TRIGGER:', currentLn) = 1 )
+        then
+          alarmTrigger := COPY (currentLn, 9, length(currentLn));
+
+        if (pos('ACTION:', currentLn) = 1 )
+        then
+          alarmAction  := COPY (currentLn, 8, length(currentLn));
+
+        if (pos('DESCRIPTION:', currentLn) = 1 )
+        then
+          alarmDescription := COPY (currentLn, 13, length(currentLn));
+
+      end;  (* if *)
+
+    end;  (* while *)
+
+    GetAlarm := TRUE;
+  end;
+
+
+  Procedure WriteNN(myString : String);
+  begin
+    if (length(myString) > 0 )
+    then
+      writeln (myString);
+  end;
+
+
   Procedure TEvent.WriteEvent;
 
   begin
     write('Event on     : ');
     startDate^.write;
 
-    if (length(summary) > 0 )
-    then
-      writeln (summary);
-
-    if (length(description) > 0 )
-    then
-      writeln (description);
+    WriteNN (summary);
+    WriteNN (description);
+    WriteNN (alarmTrigger);
 
     write('Event ends  : ');
     endDate^.write;

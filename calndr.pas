@@ -1,4 +1,4 @@
-{$B+,D-,G-,I-,L-,P-,Q-,R+,S-,T-,V-,X+,Z-}
+{$B+,D-,G-,I-,L-,P-,Q-,R+,S+,T-,V-,X+,Z-}
 {$M 32768}
 
 PROGRAM Calndr (input,output);
