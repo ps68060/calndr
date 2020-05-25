@@ -29,10 +29,14 @@ type
 
     Procedure LoadICS (directory : String);
     Procedure DivideIcs (const calName : String);
+    Procedure Sort;
 
   end;
 
 implementation
+
+  var
+    logger : PLogger;
 
   constructor TCal.init;
   var
@@ -140,6 +144,47 @@ implementation
     writeln;
 
     Dispose (logger, Done);
+  end;
+
+
+  Procedure TCal.Sort;
+  var
+    i, j    : LongInt;
+    swapper : PEvent;
+
+  begin
+    new (logger);
+    logger^.init;
+    logger^.level := INFO;
+
+    logger^.log (INFO, 'Starting sort...');
+
+    new(swapper);
+    swapper^.init;
+
+    for i := 1 to entries - 1
+    do
+    begin
+
+      for j := i + 1 to Entries
+      do
+      begin
+
+        IF (eventList[i]^.startDate^.epoch  >
+            eventList[j]^.startDate^.epoch )
+        then
+        begin
+          Swapper      := eventList[i];
+          eventList[i] := eventList[j];
+          eventList[j] := Swapper;
+
+        end; (* if *)
+
+      end;
+    end;
+
+    dispose(swapper, Done);
+
   end;
 
 end.
