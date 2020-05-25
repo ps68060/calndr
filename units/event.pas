@@ -54,6 +54,10 @@ implementation
     dtstart     := '';
     dtend       := '';
 
+    alarmAction      := '';
+    alarmTrigger     := '';
+    alarmDescription := '';
+
     new (startDate);
     startDate^.init;
 
