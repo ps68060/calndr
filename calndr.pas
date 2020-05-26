@@ -260,6 +260,19 @@ begin
 end;
 
 
+procedure Usage;
+begin
+  writeln ('Usage:' );
+  writeln;
+  writeln ('./calndr.ttp  <directory>' );
+  writeln ('./calndr.ttp  <past number of days> <future number of days>');
+  writeln ('./calndr.ttp  <directory> <past number of days> <future number of days>' );
+  writeln;
+  writeln ('Supply a directory containing one or more .ics files.' );
+
+end;
+
+
 (******************************  MAIN PROGRAM  ********************************)
 
 BEGIN
@@ -284,6 +297,7 @@ BEGIN
   futureStr := '50';
 
   case paramCount of
+    0 : usage;
     1 : directory := paramStr(1);
     2 : 
       begin
