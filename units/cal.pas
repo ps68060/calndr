@@ -157,8 +157,8 @@ implementation
     logger^.init;
     logger^.level := INFO;
 
-    logger^.logInt (INFO, 'Starting sort of ', entries);
-readln;
+    logger^.logInt (DEBUG, 'Starting sort of ', entries);
+
     for i := 0 to entries - 1
     do
     begin
