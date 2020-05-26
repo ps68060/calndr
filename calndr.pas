@@ -265,9 +265,9 @@ end;
 BEGIN
 
   writeln;
-  writeln ('Extract iCal Version ', version, ' ', dated);
+  writeln ('GEMiCal Version ', version, ' ', dated);
 
-  writeln('---------------------------------------');
+  writeln('--------------------------------');
 
   new(logger);
   logger^.init;
@@ -338,7 +338,7 @@ BEGIN
   DisplayCalendar(myDate);
   Dispose(myDate, Done);
 
-  logger^.log (INFO, 'Completed.');
+  logger^.log (DEBUG, 'Completed.');
 
   Dispose (logger, Done);
 
