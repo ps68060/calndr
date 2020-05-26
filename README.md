@@ -10,10 +10,18 @@ Usage:
 
 ./calndr.ttp  \<directory\>
 
+./calndr.ttp  \<past number of days\> \<future number of days\>
+
+./calndr.ttp  \<directory\> \<past number of days\> \<future number of days\>
+
 e.g.
 
  ./calndr.ttp  /f/
 
+ ./calndr.ttp  30 30
+
+ ./calndr.ttp  /f/ 30 30
+ 
 will load all the *.ics files from the folder and show details of the events
-that fall between a (hard-coded) start and end day range.
+that fall between a past and future day range.
 
