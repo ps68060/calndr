@@ -50,7 +50,10 @@ VAR
   i         : Integer;
 
   dd, hh, mi, ss : Integer;
-  future         : Boolean;
+
+  pastStr, futureStr : String;
+  past,    future    : Integer;
+  code : Integer;
 
   eventIndex   : array [1..2000] of EventIndexT;
 
@@ -181,6 +184,7 @@ var
   second,
   sec100    : Word;
 
+  future :Boolean;
   i : Integer;
 
 begin
@@ -236,8 +240,8 @@ begin
       then
       begin
         writeln('================================', chr(7) );
-        writeln('Press [return]');
-        readln;
+        (**writeln('Press [return]');
+        readln;**)
       end;
     end
 
@@ -269,17 +273,31 @@ BEGIN
   logger^.init;
   logger^.level := INFO;
 
-  (* have the parameters been put on the command line *)
+  (* have the parameters been put on the command line
+    1 = directory
+    2 = past   number of days
+    3 = future number of days
+   *)
 
-  if paramCount = 1
-  then
-  begin
-    directory   := paramStr(1);
-  end
-  else
-  begin
-    Get_File_Names(directory);
-  end;  (* if-then-else *)
+
+  pastStr   := '50';
+  futureStr := '50';
+
+  case paramCount of
+    1 : directory := paramStr(1);
+    2 : 
+      begin
+        Get_File_Names(directory);
+        pastStr   := paramStr(1);
+        futureStr := paramStr(2);
+      end;
+    3 : 
+      begin
+        directory := paramStr(1);
+        pastStr   := paramStr(2);
+        futureStr := paramStr(3);
+      end;
+  end;
 
   calName := directory;
 
@@ -291,7 +309,19 @@ BEGIN
     cal^.init;
     cal^.loadICS (directory);
 
-    DisplayEvents(30, 50);
+    cal^.sort;
+
+    val(pastStr, past,   code );
+    if (code <> 0)
+    then
+      writeln ('Integer conversion error of past at ', code, ' in ', paramStr(1) );
+
+    val(futureStr, future, code);
+    if (code <> 0)
+    then
+      writeln ('Integer conversion error of future at ', code, ' in ', paramStr(2) );
+ 
+    DisplayEvents(past, future);
 
     Dispose (cal, Done);
   end;
