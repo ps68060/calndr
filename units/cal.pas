@@ -149,7 +149,7 @@ implementation
 
   Procedure TCal.Sort;
   var
-    i, j    : LongInt;
+    i, j    : Integer;
     swapper : PEvent;
 
   begin
@@ -157,34 +157,50 @@ implementation
     logger^.init;
     logger^.level := INFO;
 
-    logger^.log (INFO, 'Starting sort...');
-
-    new(swapper);
-    swapper^.init;
-
-    for i := 1 to entries - 1
+    logger^.logInt (INFO, 'Starting sort of ', entries);
+readln;
+    for i := 0 to entries - 1
     do
     begin
 
-      for j := i + 1 to Entries
+      for j := i + 1 to entries
       do
       begin
 
-        IF (eventList[i]^.startDate^.epoch  >
+        if (eventList[i]^.startDate^.epoch  >
             eventList[j]^.startDate^.epoch )
         then
         begin
-          Swapper      := eventList[i];
-          eventList[i] := eventList[j];
-          eventList[j] := Swapper;
-
+          (*
+          writeln('Before swap ', i, ' ', j);
+          eventList[i]^.writeEvent;
+          eventList[j]^.writeEvent;
+          *)
+(*
+          new(swapper);
+          swapper^.init;
+*)
+          swapper            := eventList[i];
+          eventList[i]       := eventList[j];
+          eventList[j]       := swapper;
+(*
+          dispose(swapper, Done);
+*)
+          (*
+          writeln;
+          writeln('After swap');
+          eventList[i]^.writeEvent;
+          eventList[j]^.writeEvent;
+          writeln;
+          writeln;
+          *)
         end; (* if *)
 
       end;
     end;
 
-    dispose(swapper, Done);
-
   end;
+
+
 
 end.
