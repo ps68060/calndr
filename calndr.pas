@@ -49,8 +49,6 @@ VAR
 
   i         : Integer;
 
-  dd, hh, mi, ss : Integer;
-
   pastStr, futureStr : String;
   past,    future    : Integer;
   code : Integer;
@@ -174,6 +172,11 @@ Procedure DisplayEvents (rangePast, rangeFuture : Integer);
  *)
 
 var
+  ddDiff,
+  hhDiff,
+  miDiff,
+  ssDiff    : Integer;
+
   year,
   month,
   day,
@@ -191,10 +194,6 @@ begin
 
   GetDate(year, month, day, dayOfWeek) ;
   GetTime(hour, minute, second, sec100);
-
-  writeln('Current date is ', year, '/', month:2, '/', day:2, ': ', day1[dayOfWeek] );
-  writeln('Current time : ', hour, ':', minute, ':', second, '.', sec100);
-  writeln;
 
   dtStr := date2Str(year, month, day);
   dtStr := dtStr + ' ' + time2Str(hour, minute, second);
@@ -215,12 +214,12 @@ begin
     logger^.logLongInt (DEBUG, 'epoch = ', cal^.eventList[i]^.startDate^.epoch);
     timeBetween(cal^.eventList[i]^.startDate^.epoch,
                 myDate^.epoch,
-                dd, hh, mi, ss,
+                ddDiff, hhDiff, miDiff, ssDiff,
                 future);
 
     if (rangePast = 0) and (rangeFuture = 0)
-       or (not future) and (dd < rangePast)
-       or (future)     and (dd < rangeFuture)
+       or (not future) and (ddDiff < rangePast)
+       or (future)     and (ddDiff < rangeFuture)
     then
     begin
 
@@ -234,25 +233,26 @@ begin
     if (future)
     then
     begin
-      writeln('Occurs in    : ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's');
+      writeln('Occurs in    : ', ddDiff, ' days ', hhDiff, 'h ', miDiff, 'm ', ssDiff, 's');
 
-      if (dd = 0)
+      if (ddDiff = 0)
       then
-      begin
         writeln('================================', chr(7) );
-        (**writeln('Press [return]');
-        readln;**)
-      end;
+
     end
 
     else
-      writeln('Occurred     : ', dd, ' days ', hh, 'h ', mi, 'm ', ss, 's ago.');
+      writeln('Occurred     : ', ddDiff, ' days ', hhDiff, 'h ', miDiff, 'm ', ssDiff, 's ago.');
 
     writeln('--------------------------------' );
     writeln;
     end;
 
   end;  (* for *)
+
+  writeln('Current date : ', year, '.', month:2, '.', day:2, ': ', day1[dayOfWeek] );
+  writeln('Current time : ', hour, ':', minute, ':', second, '.', sec100);
+  writeln;
 
   Dispose (myDate, Done);
 
