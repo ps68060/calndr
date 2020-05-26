@@ -20,8 +20,8 @@ uses
 {$I D:\DEVELOP\PASCAL\strsubs.pas}
 
 CONST
-  version = '0.01ž';
-  dated   = '17.05.2020';
+  version = '0.02ž';
+  dated   = '27.05.2020';
 
 TYPE
   eventIndexT = RECORD
