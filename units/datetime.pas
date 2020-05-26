@@ -96,7 +96,9 @@ implementation
     mi   := 0;
     ss   := 0;
 
-    epoch := 0;
+    epoch  := 0;
+    julian := 2440587.5;
+    day    := 4;
   end;
 
   destructor TDateTime.done;
