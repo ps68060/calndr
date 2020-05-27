@@ -41,6 +41,8 @@ type
 
     Procedure WriteEvent;
 
+    Function isMonthEvent (y, m : Word)
+            : Boolean;
   end;
 
 
@@ -246,6 +248,65 @@ implementation
 
     write('Event ends  : ');
     endDate^.write;
+  end;
+
+
+  Function TEvent.isMonthEvent (y, m : Word)
+          : Boolean;
+
+  (* Purpose : Determine if thisEvent falls within the period (month)
+               There are 4 cases in the period:
+               1: overlap start of period
+               2: contained within period
+               3: overlap end of period
+               4: start before, end after period
+
+               and 2 cases outside the period:
+               5: start/end before period
+               6: start/end after period
+   *)
+
+  var
+    pStart,
+    pEnd   : PDateTime;
+
+    daysInMon : Integer;
+
+  begin
+    isMonthEvent := FALSE;
+
+    new(pStart);
+    pStart^.init;
+    pStart^.dtStr2Obj(date2Str(y, m, 1) + ' ' + time2Str(0, 0, 0) );
+
+    daysInMon := daysMon[m];
+    if (m = 2) and (isLeapDay(y))
+    then
+      daysInMon := 29;
+
+    new(pEnd);
+    pEnd^.init;
+    pEnd^.dtStr2Obj(date2Str(y, m, daysInMon) + ' ' + time2Str(23, 59, 59) );
+
+    (* Does the event start/end overlap with the period start/end ? *)
+
+    if      (startDate^.epoch > pStart^.epoch)
+        and (startDate^.epoch < pEnd^.epoch)
+      or
+            (endDate^.epoch > pStart^.epoch)
+        and (endDate^.epoch < pEnd^.epoch)
+      or
+            (startDate^.epoch < pStart^.epoch)
+        and (endDate^.epoch   > pEnd^.epoch)
+    then
+    begin
+      isMonthEvent := TRUE;
+      writeln ('Current event');
+    end;
+
+    Dispose (pStart, Done);
+    Dispose (pEnd,   Done);
+
   end;
 
 

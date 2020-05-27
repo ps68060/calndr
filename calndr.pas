@@ -165,60 +165,6 @@ begin
 end;
 
 
-Function isMonthEvent (thisEvent : PEvent )
-        : Boolean;
-
-(* Purpose : Determine if thisEvent falls within the period (month)
-             There are 4 cases in the period:
-             1: overlap start of period
-             2: contained within period
-             3: overlap end of period
-             4: start before, end after period
-
-             and 2 cases outside the period:
-             5: start/end before period
-             6: start/end after period
- *)
-
-var
-  pStart,
-  pEnd   : PDateTime;
-
-begin
-  isMonthEvent := FALSE;
-
-
-  new(pStart);
-  pStart^.init;
-  pStart^.dtStr2Obj('20200501 000000');
-
-  new(pEnd);
-  pEnd^.init;
-  pEnd^.dtStr2Obj('20200531 235959');
-
-  (* Does the event start/end overlap with the period start/end ? *)
-
-  if      (thisEvent^.startDate^.epoch > pStart^.epoch)
-      and (thisEvent^.startDate^.epoch < pEnd^.epoch)
-    or
-          (thisEvent^.endDate^.epoch > pStart^.epoch)
-      and (thisEvent^.endDate^.epoch < pEnd^.epoch)
-    or
-          (thisEvent^.startDate^.epoch < pStart^.epoch)
-      and (thisEvent^.endDate^.epoch   > pEnd^.epoch)
-  then
-  begin
-    isMonthEvent := TRUE;
-    writeln ('Current event');
-  end;
-
-  Dispose (pStart, Done);
-  Dispose (pEnd,   Done);
-
-end;
-
-
-
 Procedure DisplayEvents (rangePast, rangeFuture : Integer);
 (*
   Purpose : List all the DateTime/Events that occur either side of
@@ -273,7 +219,7 @@ begin
                 future);
 
 
-    (*isMonthEvent(cal^.eventList[i] );  *)
+    (**cal^.eventList[i]^.isMonthEvent(2020, 5); **)
 
     if (rangePast = 0) and (rangeFuture = 0)
        or (not future) and (ddDiff < rangePast)
