@@ -109,9 +109,9 @@ begin
 end;
 
 
-procedure DisplayCalendar(myDate : PDateTime);
+procedure DisplayCalendar(calDate : PDateTime);
 (*
-  Purpose : Write out a formatted calendar for the month <myDate>.
+  Purpose : Write out a formatted calendar for the month <calDate>.
  *)
 
 var
@@ -122,13 +122,13 @@ var
 begin
   writeln;
 
-  daysInMon := daysMon[myDate^.mm];
+  daysInMon := daysMon[calDate^.mm];
 
-  if (myDate^.mm = 2) and (isLeapDay(myDate^.yyyy))
+  if (calDate^.mm = 2) and (isLeapDay(calDate^.yyyy))
   then
     daysInMon := 29;
 
-  writeln(myDate^.yyyy, '    ', mon1[myDate^.mm]);
+  writeln(calDate^.yyyy, '    ', mon1[calDate^.mm]);
 
   for i := 0 to 6
   do
@@ -138,7 +138,7 @@ begin
   writeln;
 
   i := 0;
-  while (i < myDate^.day)
+  while (i < calDate^.day)
   do
   begin
     write('    ');
@@ -163,6 +163,60 @@ begin
   end;
 
 end;
+
+
+Function isMonthEvent (thisEvent : PEvent )
+        : Boolean;
+
+(* Purpose : Determine if thisEvent falls within the period (month)
+             There are 4 cases in the period:
+             1: overlap start of period
+             2: contained within period
+             3: overlap end of period
+             4: start before, end after period
+
+             and 2 cases outside the period:
+             5: start/end before period
+             6: start/end after period
+ *)
+
+var
+  pStart,
+  pEnd   : PDateTime;
+
+begin
+  isMonthEvent := FALSE;
+
+
+  new(pStart);
+  pStart^.init;
+  pStart^.dtStr2Obj('20200501 000000');
+
+  new(pEnd);
+  pEnd^.init;
+  pEnd^.dtStr2Obj('20200531 235959');
+
+  (* Does the event start/end overlap with the period start/end ? *)
+
+  if      (thisEvent^.startDate^.epoch > pStart^.epoch)
+      and (thisEvent^.startDate^.epoch < pEnd^.epoch)
+    or
+          (thisEvent^.endDate^.epoch > pStart^.epoch)
+      and (thisEvent^.endDate^.epoch < pEnd^.epoch)
+    or
+          (thisEvent^.startDate^.epoch < pStart^.epoch)
+      and (thisEvent^.endDate^.epoch   > pEnd^.epoch)
+  then
+  begin
+    isMonthEvent := TRUE;
+    writeln ('Current event');
+  end;
+
+  Dispose (pStart, Done);
+  Dispose (pEnd,   Done);
+
+end;
+
 
 
 Procedure DisplayEvents (rangePast, rangeFuture : Integer);
@@ -190,6 +244,8 @@ var
   future :Boolean;
   i : Integer;
 
+  calDate : PDateTime;
+
 begin
 
   GetDate(year, month, day, dayOfWeek) ;
@@ -198,13 +254,12 @@ begin
   dtStr := date2Str(year, month, day);
   dtStr := dtStr + ' ' + time2Str(hour, minute, second);
 
-  new(myDate);
-  myDate^.init;
-  myDate^.dtStr2Obj(dtStr);
-  myDate^.dayOfWeek;
+  new(calDate);
+  calDate^.init;
+  calDate^.dtStr2Obj(dtStr);
 
-  logger^.logInt(DEBUG, 'calendar ', myDate^.day);
-  logger^.logLongInt(DEBUG, 'epoch ', myDate^.epoch);
+  logger^.logInt(DEBUG, 'calendar ', calDate^.day);
+  logger^.logLongInt(DEBUG, 'epoch ', calDate^.epoch);
 
   for i := 0 to cal^.entries do
   begin
@@ -213,9 +268,12 @@ begin
 
     logger^.logLongInt (DEBUG, 'epoch = ', cal^.eventList[i]^.startDate^.epoch);
     timeBetween(cal^.eventList[i]^.startDate^.epoch,
-                myDate^.epoch,
+                calDate^.epoch,
                 ddDiff, hhDiff, miDiff, ssDiff,
                 future);
+
+
+    (*isMonthEvent(cal^.eventList[i] );  *)
 
     if (rangePast = 0) and (rangeFuture = 0)
        or (not future) and (ddDiff < rangePast)
@@ -224,8 +282,8 @@ begin
     begin
 
     (*
-    writeln('Current date : ', myDate^.yyyy,      myDate^.mm:2,      myDate^.dd:2,
-            ' ', myDate^.hh24:2,      ':', myDate^.mi:2,      ':', myDate^.ss:2);
+    writeln('Current date : ', calDate^.yyyy,      calDate^.mm:2,      calDate^.dd:2,
+            ' ', calDate^.hh24:2,      ':', calDate^.mi:2,      ':', calDate^.ss:2);
     *)
 
     cal^.eventList[i]^.writeEvent;
@@ -250,11 +308,11 @@ begin
 
   end;  (* for *)
 
+  Dispose (calDate, Done);
+
   writeln('Current date : ', year, '.', month:2, '.', day:2, ': ', day1[dayOfWeek] );
   writeln('Current time : ', hour, ':', minute, ':', second, '.', sec100);
   writeln;
-
-  Dispose (myDate, Done);
 
   logger^.level := INFO;
 end;
