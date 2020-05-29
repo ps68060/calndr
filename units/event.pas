@@ -22,6 +22,7 @@ type
     description : String;
     dtStart     : String;
     dtEnd       : String;
+    location    : String;
 
     startDate   : PDateTime;
     endDate     : PDateTime;
@@ -55,6 +56,7 @@ implementation
     description := '';
     dtstart     := '';
     dtend       := '';
+    location    := '';
 
     alarmAction      := '';
     alarmTrigger     := '';
@@ -141,6 +143,12 @@ implementation
            and (NOT alarm)
         then
           description := COPY (currentLn, 13, length(currentLn));
+
+        if ( pos('LOCATION:', currentLn) = 1 )
+           and (NOT alarm)
+        then
+          location := COPY (currentLn, 10, length(currentLn));
+
 
         if (NOT alarm)
             and (pos('BEGIN:VALARM', currentLn) = 1 )
@@ -244,9 +252,13 @@ implementation
 
     WriteNN (summary);
     WriteNN (description);
+
+    write('Location     : ');
+    WriteNN (location);
+
     WriteNN (alarmTrigger);
 
-    write('Event ends  : ');
+    write('Event ends   : ');
     endDate^.write;
   end;
 
