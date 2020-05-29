@@ -241,8 +241,14 @@ begin
 
       if (ddDiff = 0)
       then
+      begin
+        timeBetween(cal^.eventList[i]^.startDate^.epoch,
+                    cal^.eventList[i]^.endDate^.epoch,
+                    ddDiff, hhDiff, miDiff, ssDiff,
+                    future);
+        writeln('Duration     : ', hhDiff, ':', miDiff, ':', ssDiff);
         writeln('================================', chr(7) );
-
+      end;
     end
 
     else
