@@ -77,15 +77,18 @@ type
                     human : Boolean)
           : String;
 
-  function isLeapDay(y : Integer)
-          : Boolean;
-
   procedure timeBetween(epoch1, epoch2:LongInt;
                         var dd,
                             hh,
                             mi,
                             ss : Integer;
                         var future : Boolean);
+
+  function isLeapDay(y : Integer)
+          : Boolean;
+
+  function daysInMonth(myDate : PDateTime)
+          :Integer;
 
 implementation
 
@@ -215,9 +218,19 @@ implementation
           : Double;
   var
     y, m, d  : double;
-    part1, part2, part3, part4 : double;
+
+    part1,
+    part2,
+    part3, 
+    part4    : double;
+
+    logger   : PLogger;
 
   begin
+    new(logger);
+    logger^.init;
+    logger^.level := INFO;
+
     (* this didn't work.
     y := yyyy;
     m := mm;
@@ -252,9 +265,8 @@ implementation
     then
       julian := julian - 0.5;
 
-    (*
-     writeln ('Julian date is', julian:20:3);
-    *)
+    logger^.logReal(DEBUG, 'Julian date is ', julian);
+    Dispose (logger, Done);
 
     julianDate := julian;
   end;
@@ -380,6 +392,7 @@ implementation
 
   end;
 
+
   procedure timeBetween(epoch1, epoch2:LongInt;
                         var dd,
                             hh,
@@ -449,6 +462,18 @@ implementation
     end
     else
       isLeapDay := FALSE;
+  end;
+
+
+  function daysInMonth(myDate : PDateTime)
+          :Integer;
+  (* Purpose : Calculate date of end of month *)
+  begin
+    daysInMonth := daysMon[myDate^.mm];
+
+    if (myDate^.mm = 2) and (isLeapDay(myDate^.yyyy))
+    then
+      daysInMonth := 29;
   end;
 
 end.
