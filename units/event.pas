@@ -248,7 +248,7 @@ implementation
 
   begin
     write('Event on     : ');
-    startDate^.write;
+    startDate^.writeDT;
 
     WriteNN (summary);
     WriteNN (description);
@@ -259,7 +259,7 @@ implementation
     WriteNN (alarmTrigger);
 
     write('Event ends   : ');
-    endDate^.write;
+    endDate^.writeDT;
   end;
 
 
@@ -289,7 +289,7 @@ implementation
 
     new(pStart);
     pStart^.init;
-    pStart^.dtStr2Obj(date2Str(y, m, 1) + ' ' + time2Str(0, 0, 0) );
+    pStart^.dtStr2Obj(date2Str(y, m, 1, FALSE) + ' ' + time2Str(0, 0, 0, FALSE) );
 
     daysInMon := daysMon[m];
     if (m = 2) and (isLeapDay(y))
@@ -298,7 +298,7 @@ implementation
 
     new(pEnd);
     pEnd^.init;
-    pEnd^.dtStr2Obj(date2Str(y, m, daysInMon) + ' ' + time2Str(23, 59, 59) );
+    pEnd^.dtStr2Obj(date2Str(y, m, daysInMon, FALSE) + ' ' + time2Str(23, 59, 59, FALSE) );
 
     (* Does the event start/end overlap with the period start/end ? *)
 
