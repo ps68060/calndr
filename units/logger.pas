@@ -32,6 +32,14 @@ type
     procedure logLongInt(msgLevel : a_level;
                          message  : String;
                          int      : LongInt );
+
+    procedure logWord(msgLevel : a_level;
+                      message  : String;
+                      myWord   : Word );
+
+    procedure logReal(msgLevel : a_level;
+                      message  : String;
+                      myReal   : Real );
   end;
 
 implementation
@@ -83,7 +91,6 @@ begin
 end;
 
 
-
 procedure TLogger.logLongInt(msgLevel : a_level;
                              message  : String;
                              int      : LongInt );
@@ -95,5 +102,29 @@ begin
 
 end;
 
+
+procedure TLogger.logWord(msgLevel : a_level;
+                          message  : String;
+                          myWord   : Word );
+begin
+
+  if (ord(level) >= ord(msgLevel) )
+  then
+    writeln(message, myWord);
+
+end;
+
+
+
+procedure TLogger.logReal(msgLevel : a_level;
+                          message  : String;
+                          myReal   : Real );
+begin
+
+  if (ord(level) >= ord(msgLevel) )
+  then
+    writeln(message, myReal:10:5);
+
+end;
 
 end.
