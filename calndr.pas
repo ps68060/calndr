@@ -197,8 +197,8 @@ begin
   GetDate(year, month, day, dayOfWeek) ;
   GetTime(hour, minute, second, sec100);
 
-  dtStr := date2Str(year, month, day);
-  dtStr := dtStr + ' ' + time2Str(hour, minute, second);
+  dtStr := date2Str(year, month, day, FALSE);
+  dtStr := dtStr + ' ' + time2Str(hour, minute, second, FALSE);
 
   new(calDate);
   calDate^.init;
@@ -262,8 +262,10 @@ begin
 
   Dispose (calDate, Done);
 
-  writeln('Current date : ', year, '.', month:2, '.', day:2, ': ', day1[dayOfWeek] );
-  writeln('Current time : ', hour, ':', minute, ':', second, '.', sec100);
+  writeln('Current date : ', date2Str(year, month, day, TRUE) + ': ', day1[dayOfWeek] );
+  writeln('Current time : ', time2Str(hour, minute, second, TRUE), '.', sec100);
+  writeln(time2Str(hour, minute, second, TRUE) );
+
   writeln;
 
   logger^.level := INFO;
@@ -352,7 +354,7 @@ BEGIN
 
   (* Display this month's calendar *)
   GetDate (year, month, day, dayOfWeek) ;
-  dtStr := date2Str(year, month, 1);
+  dtStr := date2Str(year, month, 1, FALSE);
 
   new(myDate);
   myDate^.init;
