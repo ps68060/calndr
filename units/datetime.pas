@@ -44,6 +44,7 @@ type
     hh24 : Integer;
     mi   : Integer;
     ss   : Integer;
+    tz   : String;
 
     epoch  : LongInt;
     julian : Double;
@@ -64,14 +65,16 @@ type
 
     procedure epoch2Date;
 
-    procedure write;
+    procedure writeDT;
 
   end;
 
-  function date2Str(year, month, day : Word)
+  function date2Str(year, month, day : Word;
+                    human : Boolean)
           : String;
 
-  function time2Str(hour, minute, second : Word)
+  function time2Str(hour, minute, second : Word;
+                    human : Boolean)
           : String;
 
   function isLeapDay(y : Integer)
@@ -95,6 +98,7 @@ implementation
     hh24 := 0;
     mi   := 0;
     ss   := 0;
+    tz   := '';
 
     epoch  := 0;
     julian := 2440587.5;
@@ -142,6 +146,8 @@ implementation
     if (code <> 0)
     then
       writeln ('Integer conversion error of ss at ', code, ' in ', dtString);
+
+    tz := COPY (dtString, 16, length(dtString) );
 
     (*writeln (yyyy, mm, dd, ' ', hh24, mi, ss); *)
 
@@ -296,45 +302,82 @@ implementation
   end;
 
 
-  procedure TDateTime.write;
+  procedure TDateTime.writeDT;
   begin
     writeln( yyyy,                        '.',
              lpad(IntToStr(mm),  2, '0'), '.',
              lpad(IntToStr(dd),  2, '0'), ' ',
              lpad(IntToStr(hh24),2, '0'), ':',
              lpad(IntToStr(mi),  2, '0'), ':',
-             lpad(IntToStr(ss),  2, '0') );
+             lpad(IntToStr(ss),  2, '0'), ' ',
+             tz
+           );
   end;
 
 
-  function date2Str(year, month, day : Word)
+  function date2Str(year, month, day : Word;
+                    human : Boolean)
           : String;
   var
     dtStr : String;
   begin
     (*writeln('Date is ', year, '/', month, '/', day ); *)
 
-    dtStr := IntToStr(trunc(year ) );
-    dtStr := dtStr + LPad( IntToStr(trunc(month) ), 2, '0' );
-    dtStr := dtStr + LPad( IntToStr(trunc(day)   ), 2, '0' );
+    if (human)
+    then
+    begin
+      dtStr := IntToStr(trunc(year ) ) + '.';
+      dtStr := dtStr + LPad( IntToStr(trunc(month) ), 2, '0' ) + '.';
+      dtStr := dtStr + LPad( IntToStr(trunc(day)   ), 2, '0' );
+    end
+
+    else
+    begin
+      dtStr := IntToStr(trunc(year ) );
+      dtStr := dtStr + LPad( IntToStr(trunc(month) ), 2, '0' );
+      dtStr := dtStr + LPad( IntToStr(trunc(day)   ), 2, '0' );
+    end;
 
     date2Str := dtStr;
   end;
 
 
-  function time2Str(hour, minute, second : Word)
+  function time2Str(hour, minute, second : Word;
+                    human : Boolean)
           : String;
   var
-    tmStr : String;
+    logger  : PLogger;
+    tmStr   : String;
+
   begin
+    new(logger);
+    logger^.init;
+    logger^.level := INFO;
+
     (*writeln('Time is ', hour, ':', minute, ':', second ); *)
 
-    tmStr :=         LPad( IntToStr(trunc(hour  ) ), 2, '0' );
-    tmStr := tmStr + LPad( IntToStr(trunc(minute) ), 2, '0' );
-    tmStr := tmStr + LPad( IntToStr(trunc(second) ), 2, '0' );
+    if (human)
+    then
+    begin
+      logger^.log(DEBUG, 'human format');
+      tmStr :=         LPad( IntToStr(trunc(hour  ) ), 2, '0' ) + ':';
+      tmStr := tmStr + LPad( IntToStr(trunc(minute) ), 2, '0' ) + ':';
+      tmStr := tmStr + LPad( IntToStr(trunc(second) ), 2, '0' );
+    end
+
+    else
+    begin
+      tmStr :=         LPad( IntToStr(trunc(hour  ) ), 2, '0' );
+      tmStr := tmStr + LPad( IntToStr(trunc(minute) ), 2, '0' );
+      tmStr := tmStr + LPad( IntToStr(trunc(second) ), 2, '0' );
+    end;
+
     (*writeln(tmStr); *)
 
+    Dispose (logger, Done);
+
     time2Str := tmStr;
+
   end;
 
   procedure timeBetween(epoch1, epoch2:LongInt;
